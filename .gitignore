@@ -21,10 +21,10 @@ local.properties
 proguard/
 
 # Intellij project files
-*.iml
-*.ipr
-*.iws
-.idea/
+#*.iml
+#*.ipr
+#*.iws
+#.idea/
 
 # don't commit a library folder
 AndroidBeaconLibrary
@@ -40,4 +40,4 @@ gradle.properties
 .ruby-gemset
 
 # Keep vendor libs out of repo
-lib/
+#lib/
