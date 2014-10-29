@@ -8,10 +8,10 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Large Text"
         android:id="@+id/bus_id"
-        android:layout_gravity="center_horizontal" />
+        android:layout_gravity="left" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -19,6 +19,6 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Medium Text"
         android:id="@+id/bus_distance"
-        android:layout_gravity="center_horizontal" />
+        android:layout_gravity="left" />
 
 </LinearLayout>

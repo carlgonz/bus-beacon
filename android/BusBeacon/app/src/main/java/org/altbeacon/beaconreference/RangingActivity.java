@@ -2,20 +2,18 @@ package org.altbeacon.beaconreference;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Locale;
 
 import android.app.Activity;
 
 import android.os.Bundle;
 import android.os.RemoteException;
-import android.util.Log;
-import android.widget.EditText;
+import android.speech.tts.TextToSpeech;
 import android.widget.ListView;
 
-import org.altbeacon.beacon.AltBeacon;
 import org.altbeacon.beacon.Beacon;
 import org.altbeacon.beacon.BeaconConsumer;
 import org.altbeacon.beacon.BeaconManager;
-import org.altbeacon.beacon.BeaconParser;
 import org.altbeacon.beacon.RangeNotifier;
 import org.altbeacon.beacon.Region;
 
@@ -23,8 +21,12 @@ public class RangingActivity extends Activity implements BeaconConsumer {
     protected static final String TAG = "RangingActivity";
     private BeaconManager beaconManager = BeaconManager.getInstanceForApplication(this);
     private ListView list;
-    ArrayList<Beacon> l;
+    ArrayList<Beacon> beacons_l;
     Adapter adapter;
+    private TextToSpeech busTTS;
+    private String appTitle;
+    Integer ticks;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,9 +34,17 @@ public class RangingActivity extends Activity implements BeaconConsumer {
         list = (ListView)findViewById(R.id.listView);
         beaconManager.bind(this);
         beaconManager.debug = true;
-        l = new ArrayList<Beacon>();
-        adapter = new Adapter(RangingActivity.this,l);
+        beacons_l = new ArrayList<Beacon>();
+        adapter = new Adapter(RangingActivity.this, beacons_l);
+        busTTS = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
 
+            }
+        });
+        busTTS.setLanguage(Locale.getDefault());
+        appTitle = findViewById(R.id.appTitle).toString();
+        ticks = 0;
     }
     @Override 
     protected void onDestroy() {
@@ -55,35 +65,41 @@ public class RangingActivity extends Activity implements BeaconConsumer {
     @Override
     public void onBeaconServiceConnect() {
         beaconManager.setRangeNotifier(new RangeNotifier() {
-        @Override 
-        public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
-            if (beacons.size() > 0) {
-                l.clear();
-                l.addAll(beacons);
+            @Override
+            public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
+                if (beacons.size() > 0) {
+                    beacons_l.clear();
+                    beacons_l.addAll(beacons);
 
-            	//EditText editText = (EditText)RangingActivity.this
-				//		.findViewById(R.id.rangingText);
-
-            	logToDisplay(l);
+                    ticks ++;
+                    logToDisplay(beacons_l);
+                    speech(beacons_l);
+                }
             }
-        }
-
         });
 
         try {
             beaconManager.startRangingBeaconsInRegion(new Region("myRangingUniqueId", null, null, null));
         } catch (RemoteException e) {   }
     }
+
+    private void speech(final ArrayList<Beacon> beacons) {
+        Integer current = ticks%beacons.size();
+        if(current%2 == 0) {
+            Beacon current_beacon = beacons.get(current);
+            String report = "Recorrido " + current_beacon.getId3() + ", a " + String.format("%.1f", current_beacon.getDistance()) + "metros.";
+            busTTS.speak(report, TextToSpeech.QUEUE_FLUSH, null);
+        }
+    }
+
     private void logToDisplay(final ArrayList<Beacon> l) {
     	runOnUiThread(new Runnable() {
     	    public void run() {
-    	    	//EditText editText = (EditText)RangingActivity.this
-    			//		.findViewById(R.id.rangingText);
-    	    	//editText.append(line+"\n");
                 adapter = new Adapter(RangingActivity.this,l);
                 list.setAdapter(adapter);
-
     	    }
     	});
     }
+
+
 }
