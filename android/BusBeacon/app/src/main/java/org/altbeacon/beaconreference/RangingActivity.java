@@ -1,5 +1,6 @@
 package org.altbeacon.beaconreference;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import android.app.Activity;
@@ -8,6 +9,7 @@ import android.os.Bundle;
 import android.os.RemoteException;
 import android.util.Log;
 import android.widget.EditText;
+import android.widget.ListView;
 
 import org.altbeacon.beacon.AltBeacon;
 import org.altbeacon.beacon.Beacon;
@@ -20,14 +22,19 @@ import org.altbeacon.beacon.Region;
 public class RangingActivity extends Activity implements BeaconConsumer {
     protected static final String TAG = "RangingActivity";
     private BeaconManager beaconManager = BeaconManager.getInstanceForApplication(this);
-
+    private ListView list;
+    ArrayList<Beacon> l;
+    Adapter adapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_ranging);
-
+		setContentView(R.layout.activity_main);
+        list = (ListView)findViewById(R.id.listView);
         beaconManager.bind(this);
         beaconManager.debug = true;
+        l = new ArrayList<Beacon>();
+        adapter = new Adapter(RangingActivity.this,l);
+
     }
     @Override 
     protected void onDestroy() {
@@ -51,10 +58,13 @@ public class RangingActivity extends Activity implements BeaconConsumer {
         @Override 
         public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
             if (beacons.size() > 0) {
-            	EditText editText = (EditText)RangingActivity.this
-						.findViewById(R.id.rangingText);
-                Beacon firstBeacon = beacons.iterator().next();
-            	logToDisplay("The first beacon "+firstBeacon.toString()+" is about "+firstBeacon.getDistance()+" meters away.");
+                l.clear();
+                l.addAll(beacons);
+
+            	//EditText editText = (EditText)RangingActivity.this
+				//		.findViewById(R.id.rangingText);
+
+            	logToDisplay(l);
             }
         }
 
@@ -64,12 +74,15 @@ public class RangingActivity extends Activity implements BeaconConsumer {
             beaconManager.startRangingBeaconsInRegion(new Region("myRangingUniqueId", null, null, null));
         } catch (RemoteException e) {   }
     }
-    private void logToDisplay(final String line) {
+    private void logToDisplay(final ArrayList<Beacon> l) {
     	runOnUiThread(new Runnable() {
     	    public void run() {
-    	    	EditText editText = (EditText)RangingActivity.this
-    					.findViewById(R.id.rangingText);
-    	    	editText.append(line+"\n");            	
+    	    	//EditText editText = (EditText)RangingActivity.this
+    			//		.findViewById(R.id.rangingText);
+    	    	//editText.append(line+"\n");
+                adapter = new Adapter(RangingActivity.this,l);
+                list.setAdapter(adapter);
+
     	    }
     	});
     }
