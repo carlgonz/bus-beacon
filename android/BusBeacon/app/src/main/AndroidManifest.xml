@@ -14,6 +14,8 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
+        
+        <!-- Run in background -->
         <activity
             android:name="org.altbeacon.beaconreference.RangingActivity"
             android:label="@string/app_name" >
@@ -22,6 +24,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        
+        <!-- Probably need to be removed -->
         <activity
             android:name="org.altbeacon.beaconreference.MonitoringActivity"
             android:label="@string/app_name" >
