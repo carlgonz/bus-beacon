@@ -97,7 +97,7 @@ public class RangingActivity extends Activity implements BeaconConsumer {
         if(ticks%5 == 0) {
             Beacon current_beacon = nearBeacon(beacons);
             String report = "Recorrido " + current_beacon.getId3() + ", a " + String.format("%.1f", current_beacon.getDistance()) + "metros.";
-            busTTS.speak(report, TextToSpeech.QUEUE_ADD, null);
+            busTTS.speak(report, TextToSpeech.QUEUE_FLUSH, null);
         }
     }
 
@@ -111,17 +111,16 @@ public class RangingActivity extends Activity implements BeaconConsumer {
     }
 
     private Beacon nearBeacon (final ArrayList<Beacon> beacons){
-        Beacon beacon_max = beacons.get(0);
-        double max = 0;
-        for(int i=0; i==beacons.size(); i++){
-            beacon_max = beacons.get(i);
-            double Distance = beacon_max.getDistance();
-            if(Distance > max) {
-                max = Distance;
-                beacon_max = beacons.get(i);
+        Beacon beacon_min = beacons.get(0);
+        double min = 100;
+        for (Beacon beacon : beacons) {
+            double current_distance = beacon.getDistance();
+            if (current_distance < min) {
+                min = current_distance;
+                beacon_min = beacon;
             }
         }
-        return beacon_max;
+        return beacon_min;
     }
 
     private void verifyBluetooth() {
@@ -129,8 +128,8 @@ public class RangingActivity extends Activity implements BeaconConsumer {
         try {
             if (!BeaconManager.getInstanceForApplication(this).checkAvailability()) {
                 final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("Bluetooth not enabled");
-                builder.setMessage("Please enable bluetooth in settings and restart this application.");
+                builder.setTitle("Bluetooth desactivado");
+                builder.setMessage("Para usar esta aplicación es necesario activar el bluetooth del dispositivo.");
                 builder.setPositiveButton(android.R.string.ok, null);
                 builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
                     @Override
@@ -144,8 +143,8 @@ public class RangingActivity extends Activity implements BeaconConsumer {
         }
         catch (RuntimeException e) {
             final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("Bluetooth LE not available");
-            builder.setMessage("Sorry, this device does not support Bluetooth LE.");
+            builder.setTitle("Dispositivo no compatible");
+            builder.setMessage("Lo sentimos, tu dispositivo no posee Bluetooth LE.");
             builder.setPositiveButton(android.R.string.ok, null);
             builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
 
