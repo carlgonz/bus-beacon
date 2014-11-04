@@ -3,22 +3,22 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/item">
+    android:layout_gravity="center"
+    android:longClickable="false">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Large Text"
-        android:id="@+id/bus_id"
-        android:layout_gravity="left" />
+        android:text="@string/app_title"
+        android:id="@+id/app_Title"
+        android:layout_gravity="center_horizontal"
+        android:paddingBottom="10dp"/>
 
-    <TextView
-        android:layout_width="wrap_content"
+    <ListView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Medium Text"
-        android:id="@+id/bus_distance"
-        android:layout_gravity="left" />
-
+        android:id="@+id/listView"
+        android:layout_gravity="center_horizontal"
+        android:choiceMode="singleChoice" />
 </LinearLayout>

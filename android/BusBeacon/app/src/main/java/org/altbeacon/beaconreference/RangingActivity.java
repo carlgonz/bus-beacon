@@ -56,11 +56,13 @@ public class RangingActivity extends Activity implements BeaconConsumer {
         super.onDestroy();
         beaconManager.unbind(this);
     }
+
     @Override
     protected void onPause() {
     	super.onPause();
     	if (beaconManager.isBound(this)) beaconManager.setBackgroundMode(true);
     }
+
     @Override
     protected void onResume() {
     	super.onResume();
@@ -72,18 +74,14 @@ public class RangingActivity extends Activity implements BeaconConsumer {
         beaconManager.setRangeNotifier(new RangeNotifier() {
             @Override
             public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
+                beacons_l.clear();
+                beacons_l.addAll(beacons);
+                logToDisplay(beacons_l);
+
                 if (beacons.size() > 0) {
-                    beacons_l.clear();
-                    beacons_l.addAll(beacons);
-
-                    //app_title.setText("Hay buses!");
                     ticks ++;
-                    logToDisplay(beacons_l);
                     speech(beacons_l);
-
-                }// else {
-                  //  noBuses();
-                //}
+                }
             }
         });
 
@@ -97,7 +95,7 @@ public class RangingActivity extends Activity implements BeaconConsumer {
         if(ticks%5 == 0) {
             Beacon current_beacon = nearBeacon(beacons);
             String report = "Recorrido " + current_beacon.getId3() + ", a " + String.format("%.1f", current_beacon.getDistance()) + "metros.";
-            busTTS.speak(report, TextToSpeech.QUEUE_FLUSH, null);
+            busTTS.speak(report, TextToSpeech.QUEUE_ADD, null);
         }
     }
 
@@ -160,10 +158,4 @@ public class RangingActivity extends Activity implements BeaconConsumer {
         }
 
     }
-    /*
-    private void noBuses(){
-        app_title.setText("No Buses");
-    }
-    */
-
 }
